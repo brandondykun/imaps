@@ -26,18 +26,18 @@ def create_out_path(file):
 
 #------------------------------------Inputs---------------------------------------#
 # Inputs formatted for use in the tool
-#out_gdb = arcpy.GetParameterAsText(0)
-#pad_num = arcpy.GetParameterAsText(1)
-#elev_pts = arcpy.GetParameterAsText(2)
-#in_dem = arcpy.GetParameterAsText(3)
-#pillars = arcpy.GetParameterAsText(4)
+out_gdb = arcpy.GetParameterAsText(0)
+pad_num = arcpy.GetParameterAsText(1)
+elev_pts = arcpy.GetParameterAsText(2)
+in_dem = arcpy.GetParameterAsText(3)
+pillars = arcpy.GetParameterAsText(4)
 
 # Inputs formatted to be run while building tool
-out_gdb = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/Test_Outputs.gdb'                        # Output geodatabase
-pad_num = 'Pad15A'                                                                                      # Site Pad Number
-elev_pts = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_Contours'  # Elevation points                                                              # Pad Number for consistent naming convention
-in_dem = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_DEM1000ft'   # DEM
-pillars = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_Pillars'    # pillar polygons
+# out_gdb = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/Test_Outputs.gdb'                        # Output geodatabase
+# pad_num = 'Pad15A'                                                                                      # Site Pad Number
+# elev_pts = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_Contours'  # Elevation points                                                              # Pad Number for consistent naming convention
+# in_dem = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_DEM1000ft'   # DEM
+# pillars = 'C:/Users/Brandon/Desktop/imaps/project_data/CPA_AOI/ConsolGasWellInfo.gdb/Pad15A_Pillars'    # pillar polygons
 
 
 #------------------------------------Inputs---------------------------------------#
@@ -68,9 +68,11 @@ try:
                             evp_out_pt_features, evp_interpolate_values, 
                             evp_add_attributes)
 
+    arcpy.AddMessage('Extract Values to Points completed successfully...')
+
 except LicenseError:
     # Prints LicenseError
-    print 'Spatial Analyst license is unavailable'
+    print '*Spatial Analyst license is unavailable*'
 
 except arcpy.ExecuteError:
     # Prints ExecuteError Message
@@ -90,7 +92,7 @@ finally:
 
 # Set local variables
 idw_in_pt_features = create_out_path('Extract')                       
-idw_z_field = 'ELEVATION'                                                                # Make sure this will always be the same
+idw_z_field = 'ELEVATION'                                         # Make sure this will always be the same
 idw_out_ga_layer = '' #optional                                                             
 idw_out_raster = create_out_path('IDWElev')                             
 idw_cell_size = ''                                                                  
@@ -123,13 +125,15 @@ try:
                     idw_out_raster, idw_cell_size, idw_power, 
                     idw_search_neighborhood, idw_weight_field)    
 
+    arcpy.AddMessage('Inverse Distance Weighted completed successfully...')
+
 except LicenseError:
     # Prints LicenseError
-    print 'Geostatistical Analyst license is unavailable'
+    arcpy.AddError('*Geostatistical Analyst license is unavailable*')
 
 except arcpy.ExecuteError:
     # Prints ExecuteError Message
-    print arcpy.GetMessages(2)
+    print arcpy.AddError(2)
 
 finally:    
     # Checkin the ArcGIS Geostatistical Analyst extension license
@@ -154,6 +158,8 @@ rtp_field = ''                                                    # Find out if 
 try:
     # Execute RasterToPoint
     arcpy.RasterToPoint_conversion(rtp_in_raster, rtp_out_pt, rtp_field)
+
+    arcpy.AddMessage('Raster to Point completed successfully...')
 
 except arcpy.ExecuteError:
     # Prints ExecuteError Message
@@ -235,6 +241,8 @@ try:
     # for the join operation and join type
     arcpy.SpatialJoin_analysis(sj_target_features, sj_join_features, 
                                 sj_outfc, sj_join_operation)
+
+    arcpy.AddMessage('Spatial Join completed successfully...')
 
 except arcpy.ExecuteError:
     # Prints ExecuteError Message
